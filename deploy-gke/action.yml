@@ -45,7 +45,7 @@ runs:
       uses: chuhlomin/render-template@v1.4
       with:
         template: ${{ inputs.template_path }}
-        resultPath: rendered_template.yml
+        result_path: rendered_template.yml
         vars: ${{ inputs.vars }}
 
     - name: Deploy
