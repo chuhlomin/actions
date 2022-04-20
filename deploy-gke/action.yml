@@ -1,0 +1,50 @@
+name: 'Deploy to GKE'
+description: 'Deploys a Docker image to Google Kubernetes Engine'
+inputs:
+  service_account_key:
+    description: 'Google Service Account Key'
+    required: true
+  project_id:
+    description: 'Google Cloud Platform Project ID'
+    required: true
+  cluster_name:
+    description: 'Google Kubernetes Engine Cluster Name'
+    required: true
+  location:
+    description: 'Google Kubernetes Engine Cluster Location'
+    required: true
+  template_path:
+    description: 'Path to the template file'
+    required: false
+    default: 'kube.template.yml'
+  vars:
+    description: 'Dictionary of variables to pass to the template'
+    required: false
+runs:
+  using: "composite"
+  steps:
+    - name: Setup gcloud CLI
+      uses: google-github-actions/setup-gcloud@v0.2.0
+      with:
+        service_account_key: ${{ inputs.service_account_key }}
+        project_id: ${{ inputs.project_id }}
+
+    - name: Get the GKE credentials
+      uses: google-github-actions/get-gke-credentials@v0.2.1
+      with:
+        cluster_name: ${{ inputs.cluster_name }}
+        location: ${{ inputs.location }}
+        credentials: ${{ inputs.service_account_key }}
+
+    - name: Render template
+      uses: chuhlomin/render-template@v1.4
+      with:
+        template: ${{ inputs.template_path }}
+        resultPath: rendered_template.yml
+        vars: ${{ inputs.vars }}
+
+    - name: Deploy
+      shell: bash
+      run: |-
+        kubectl apply -f rendered_template.yml
+        kubectl rollout status deployment/$DEPLOYMENT_NAME
