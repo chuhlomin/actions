@@ -20,6 +20,11 @@ inputs:
   vars:
     description: 'Dictionary of variables to pass to the template'
     required: false
+    default: ''
+  rollout_status_wait:
+    description: 'Wait for rollout to complete'
+    required: false
+    default: ''
 runs:
   using: "composite"
   steps:
@@ -45,6 +50,9 @@ runs:
 
     - name: Deploy
       shell: bash
-      run: |-
-        kubectl apply -f rendered_template.yml
-        kubectl rollout status deployment/$DEPLOYMENT_NAME
+      run: kubectl apply -f rendered_template.yml
+
+    - name: Wait for rollout
+      shell: bash
+      if: ${{ inputs.rollout_status_wait }}
+      run: kubectl rollout status ${{ inputs.rollout_status_wait }}
