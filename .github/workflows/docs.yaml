@@ -13,18 +13,17 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Generate docs
+        id: docs
         uses: chuhlomin/github-actions-docs@v0.0.1
         with:
           working-dir: docker-build-push,deploy-gke
 
-      - name: Setup git config
+      - name: Commit & push
+        if: steps.docs.num-changed > 0
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-
-      - name: Commit & push
-        run: |
-          git status --porcelain
           git add *
+          git status --porcelain
           git commit -m "github-actions-docs: automated action"
           git push origin main
