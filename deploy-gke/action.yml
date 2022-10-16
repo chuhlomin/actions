@@ -25,6 +25,10 @@ inputs:
     description: 'Wait for rollout to complete'
     required: false
     default: ''
+  pre_apply:
+    description: 'Command to run before applying the template'
+    required: false
+    default: ''
 runs:
   using: "composite"
   steps:
@@ -48,7 +52,12 @@ runs:
         result_path: rendered_template.yml
         vars: ${{ inputs.vars }}
 
-    - name: Deploy
+    - name: Pre-apply
+      shell: bash
+      if: ${{ inputs.pre_apply }}
+      run: ${{ inputs.pre_apply }}
+
+    - name: Apply
       shell: bash
       run: kubectl apply -f rendered_template.yml
 
