@@ -34,11 +34,11 @@ runs:
         password: ${{ inputs.password }}
 
     - name: Prepare Docker tags and labels
-      id: docker_meta
-      uses: crazy-max/ghaction-docker-meta@v4
+      id: meta
+      uses: docker/metadata-action@v4
       with:
         images: ${{ inputs.image_name }}
-        tag-sha: true
+        tags: type=sha
 
     - name: Build and push to CR
       uses: docker/build-push-action@v3
@@ -48,5 +48,5 @@ runs:
         push: true
         tags: |
           ${{ inputs.tags }}
-          ${{ steps.docker_meta.outputs.tags }}
-        labels: ${{ steps.docker_meta.outputs.labels }}
+          ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
