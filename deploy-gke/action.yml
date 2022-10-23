@@ -46,7 +46,7 @@ runs:
         credentials: ${{ inputs.service_account_key }}
 
     - name: Render template
-      uses: chuhlomin/render-template@v1.4
+      uses: chuhlomin/render-template@v1.6
       with:
         template: ${{ inputs.template_path }}
         result_path: rendered_template.yml

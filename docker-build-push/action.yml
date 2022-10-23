@@ -35,7 +35,7 @@ runs:
 
     - name: Prepare Docker tags and labels
       id: docker_meta
-      uses: crazy-max/ghaction-docker-meta@v1
+      uses: crazy-max/ghaction-docker-meta@v4
       with:
         images: ${{ inputs.image_name }}
         tag-sha: true
