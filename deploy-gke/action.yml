@@ -43,7 +43,6 @@ runs:
         project_id: ${{ inputs.project_id }}
         cluster_name: ${{ inputs.cluster_name }}
         location: ${{ inputs.location }}
-        credentials: ${{ inputs.service_account_key }}
 
     - name: Render template
       uses: chuhlomin/render-template@v1.6
