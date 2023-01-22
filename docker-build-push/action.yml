@@ -20,6 +20,10 @@ inputs:
     description: 'Dockerfile path'
     required: false
     default: './Dockerfile'
+  platforms:
+    description: 'Platforms to build for'
+    required: false
+    default: 'linux/amd64,linux/arm64,linux/arm/v7'
 runs:
   using: "composite"
   steps:
@@ -50,3 +54,4 @@ runs:
           ${{ inputs.tags }}
           ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
+        platforms: ${{ inputs.platforms }}
