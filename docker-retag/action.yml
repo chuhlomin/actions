@@ -31,18 +31,18 @@ runs:
 
     - name: Pull image
       shell: bash
-      run: docker pull ${{ inputs.registry }}/${{ inputs.image_name }}:${{ inputs.src-tag }}
+      run: docker pull ${{ inputs.image_name }}:${{ inputs.src-tag }}
 
     - name: Tag image
       shell: bash
       run: |
         for tag in ${{ inputs.tags }}; do
-          docker tag ${{ inputs.registry }}/${{ inputs.image_name }}:${{ inputs.src-tag }} ${{ inputs.registry }}/${{ inputs.image_name }}:$tag
+          docker tag ${{ inputs.image_name }}:${{ inputs.src-tag }} ${{ inputs.image_name }}:$tag
         done
 
     - name: Push image
       shell: bash
       run: |
         for tag in ${{ inputs.tags }}; do
-          docker push ${{ inputs.registry }}/${{ inputs.image_name }}:$tag
+          docker push ${{ inputs.image_name }}:$tag
         done
