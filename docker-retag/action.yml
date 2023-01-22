@@ -29,20 +29,9 @@ runs:
         username: ${{ inputs.username }}
         password: ${{ inputs.password }}
 
-    - name: Pull image
-      shell: bash
-      run: docker pull ${{ inputs.image_name }}:${{ inputs.src-tag }}
-
     - name: Tag image
       shell: bash
       run: |
         for tag in ${{ inputs.tags }}; do
           docker buildx imagetools create -t ${{ inputs.image_name }}:$tag ${{ inputs.image_name }}:${{ inputs.src-tag }}
-        done
-
-    - name: Push image
-      shell: bash
-      run: |
-        for tag in ${{ inputs.tags }}; do
-          docker push ${{ inputs.image_name }}:$tag
         done
