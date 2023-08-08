@@ -3,7 +3,7 @@ description: 'Pulls a Docker image, retags it and pushes it to the same registry
 inputs:
   registry:
     description: 'Container Registry'
-    required: true
+    required: false
   username:
     description: 'Container Registry Username'
     required: true

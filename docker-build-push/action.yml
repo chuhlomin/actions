@@ -3,7 +3,7 @@ description: 'Builds and pushes a Docker image to Container Registry'
 inputs:
   registry:
     description: 'Container Registry'
-    required: true
+    required: false
   username:
     description: 'Container Registry Username'
     required: true
