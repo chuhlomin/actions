@@ -35,7 +35,7 @@ inputs:
   uploadArtifact:
     description: 'Upload screenshot as artifact'
     required: false
-    default: 'true'
+    default: 'false'
   commit:
     description: 'Commit screenshot to the repository'
     required: false
