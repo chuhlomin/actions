@@ -1,0 +1,105 @@
+name: Screenshot
+description: 'Make a screenshot of a website and upload it as artifact or update in the repository'
+inputs:
+  url:
+    description: 'URL of the website to make a screenshot of'
+    required: true
+  output:
+    description: 'Name of the output file'
+    required: false
+    default: 'screenshot.png'
+  mode:
+    description: 'Screenshot mode'
+    required: false
+    default: 'page'
+  width:
+    description: 'Viewport width'
+    required: false
+    default: '1024'
+  height:
+    description: 'Viewport height'
+    required: false
+    default: '768'
+  deviceScaleFactor:
+    description: 'Device scale factor'
+    required: false
+    default: '1'
+  cornerRadius:
+    description: 'Corner radius'
+    required: false
+    default: '0'
+  addShadow:
+    description: 'Add shadow to the screenshot'
+    required: false
+    default: 'false'
+  uploadArtifact:
+    description: 'Upload screenshot as artifact'
+    required: false
+    default: 'true'
+  commit:
+    description: 'Commit screenshot to the repository'
+    required: false
+    default: 'false'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Make screenshot
+      uses: chuhlomin/webpage-screenshot-action@main
+      with:
+        url: ${{ inputs.url }}
+        mode: ${{ inputs.mode }}
+        output: ${{ inputs.output }}
+        width: ${{ inputs.width }}
+        height: ${{ inputs.height }}
+        deviceScaleFactor: ${{ inputs.deviceScaleFactor }}
+
+    - name: Setup Image Magic
+      if: inputs.cornerRadius != '0' || inputs.addShadow == 'true'
+      uses: mfinelli/setup-imagemagick@v2
+
+    - name: Round corners
+      if: inputs.cornerRadius != '0'
+      shell: bash
+      run: |
+        width=$(identify -format "%w" "screenshot.png")
+        height=$(identify -format "%h" "screenshot.png")
+        convert \
+            screenshot.png \
+            \( -size ${width}x${height} xc:black -fill white \
+            -draw "roundRectangle 0,0,${width},${height},${{ inputs.cornerRadius }},${{ inputs.cornerRadius }}" \) \
+            -alpha Off -compose CopyOpacity -composite \
+            screenshot.png.temp
+        mv screenshot.png.temp screenshot.png
+
+    - name: Add shadow
+      if: inputs.addShadow == 'true'
+      shell: bash
+      run: |
+        width=$(identify -format "%w" "screenshot.png")
+        height=$(identify -format "%h" "screenshot.png")
+        convert \
+            screenshot.png \
+            \( +clone -background black -shadow 25x80+0+16 \) \
+            -background none \
+            -reverse -layers merge screenshot.png
+
+    - name: Upload screenshot
+      uses: actions/upload-artifact@v3
+      if: inputs.uploadArtifact == 'true'
+      with:
+        name: screenshot
+        path: screenshot.png
+
+    - name: Commit screenshot (if changed)
+      if: inputs.commit == 'true'
+      shell: bash
+      run: |
+        if (git status --porcelain | grep screenshot.png)
+        then
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add screenshot.png
+          git commit -m "Update screenshot [skip ci]"
+          git push
+        fi
