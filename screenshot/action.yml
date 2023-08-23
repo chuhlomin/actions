@@ -76,11 +76,10 @@ runs:
       if: inputs.addShadow == 'true'
       shell: bash
       run: |
-        width=$(identify -format "%w" "screenshot.png")
-        height=$(identify -format "%h" "screenshot.png")
         convert \
             screenshot.png \
-            \( +clone -background black -shadow 25x80+0+16 \) \
+            \( +clone -background black -shadow 55x3+0+0 \) \
+            \( +clone -background black -shadow 40x50+0+36 \) \
             -background none \
             -reverse -layers merge screenshot.png
 
