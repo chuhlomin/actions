@@ -69,46 +69,46 @@ runs:
       uses: mfinelli/setup-imagemagick@v2
 
     - name: Round corners
-      if: inputs.cornerRadius != '0'
+      if: inputs.type == 'png' && inputs.cornerRadius != '0'
       shell: bash
       run: |
-        width=$(identify -format "%w" "screenshot.png")
-        height=$(identify -format "%h" "screenshot.png")
+        width=$(identify -format "%w" "${{ inputs.output }}")
+        height=$(identify -format "%h" "${{ inputs.output }}")
         convert \
-            screenshot.png \
+            ${{ inputs.output }} \
             \( -size ${width}x${height} xc:black -fill white \
             -draw "roundRectangle 0,0,${width},${height},${{ inputs.cornerRadius }},${{ inputs.cornerRadius }}" \) \
             -alpha Off -compose CopyOpacity -composite \
-            screenshot.png.temp
-        mv screenshot.png.temp screenshot.png
+            ${{ inputs.output }}.temp
+        mv ${{ inputs.output }}.temp ${{ inputs.output }}
 
     - name: Add shadow
-      if: inputs.addShadow == 'true'
+      if: inputs.type == 'png' && inputs.addShadow == 'true'
       shell: bash
       run: |
         convert \
-            screenshot.png \
+            ${{ inputs.output }} \
             \( +clone -background black -shadow 55x3+0+0 \) \
             \( +clone -background black -shadow 40x50+0+36 \) \
             -background none \
-            -reverse -layers merge screenshot.png
+            -reverse -layers merge ${{ inputs.output }}
 
     - name: Upload screenshot
       uses: actions/upload-artifact@v3
       if: inputs.uploadArtifact == 'true'
       with:
         name: screenshot
-        path: screenshot.png
+        path: ${{ inputs.output }}
 
     - name: Commit screenshot (if changed)
       if: inputs.commit == 'true'
       shell: bash
       run: |
-        if (git status --porcelain | grep screenshot.png)
+        if (git status --porcelain | grep {{ inputs.output }})
         then
           git config user.name github-actions
           git config user.email github-actions@github.com
-          git add screenshot.png
+          git add {{ inputs.output }}
           git commit -m "Update screenshot [skip ci]"
           git push
         fi
