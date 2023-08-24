@@ -24,6 +24,14 @@ inputs:
     description: 'Device scale factor'
     required: false
     default: '1'
+  type:
+    description: 'Screenshot type: `png`, `jpeg` or `webp`'
+    required: false
+    default: 'png'
+  quality:
+    description: 'Screenshot quality (0-100). Unavailable for `png`'
+    required: false
+    default: '95'
   cornerRadius:
     description: 'Corner radius'
     required: false
@@ -53,6 +61,8 @@ runs:
         width: ${{ inputs.width }}
         height: ${{ inputs.height }}
         deviceScaleFactor: ${{ inputs.deviceScaleFactor }}
+        type: ${{ inputs.type }}
+        quality: ${{ inputs.quality }}
 
     - name: Setup Image Magic
       if: inputs.cornerRadius != '0' || inputs.addShadow == 'true'
