@@ -1,0 +1,24 @@
+name: 'Deploy'
+description: 'Update Docker image in remote Docker Compose file and restart the service'
+inputs:
+  server:
+    description: 'Remote server address'
+    required: true
+  service:
+    description: 'Name of the service to update & restart'
+    required: true
+  tag:
+    description: 'Docker image tag'
+    required: true
+  auth:
+    description: 'Basic auth credentials'
+    required: true
+    default: 'user:password'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Send POST request to the server
+      shell: bash
+      run: |
+        curl --fail --silent -X POST -H "Content-Type: application/json" -u ${{ inputs.auth }} https://${{ inputs.server }}/deploy/${{ inputs.service }}/${{ inputs.tag }}
