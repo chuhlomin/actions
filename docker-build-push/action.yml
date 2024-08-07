@@ -16,6 +16,10 @@ inputs:
   tags:
     description: 'Docker image tags'
     required: true
+  context:
+    description: 'Build context'
+    required: false
+    default: '.'
   dockerfile:
     description: 'Dockerfile path'
     required: false
@@ -47,7 +51,7 @@ runs:
     - name: Build and push to CR
       uses: docker/build-push-action@v6.4.1
       with:
-        context: .
+        context: ${{ inputs.context }}
         file: ${{ inputs.dockerfile }}
         push: true
         tags: |
